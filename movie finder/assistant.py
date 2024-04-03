@@ -5,27 +5,30 @@ import nltk
 import math
 
 def data_clean(data):
+
     # Convert to lowercase
     data = data.lower()
 
-    # Remove punctuation
+    # Remove punctuation: i.e periods, commas, exclamation marks, etc.
     data = data.translate(str.maketrans('', '', string.punctuation))
 
     # Tokenize text into words
     words = nltk.word_tokenize(data)
 
-    # Remove stopwords
+    #Remove StopWords through creating a set of eng StopWords
     stop_words = set(stopwords.words('english'))
     words = [w for w in words if not w in stop_words]
 
-    # Lemmatize words
+    # Lemmantize (return to base/root) words only
     lemmatizer = WordNetLemmatizer()
     words = [lemmatizer.lemmatize(w) for w in words]
 
     return words
 
 def calcul_TF(terms, doc):
+    #Empty dict to store doc descriptor
     tfDict = {}
+    #number of terms for loop
     docCount = len(doc)
     for term, count in terms.items():
         tfDict[term] = count/float(docCount)
@@ -34,6 +37,7 @@ def calcul_TF(terms, doc):
 def calcul_IDF(*args):
     idfDict = {}
     N = len(args)
+    #initializing idf dictionary
     idfDict = dict.fromkeys(args[0].keys(), 0)
     for terme in idfDict:
         idfDict[terme] = math.log10(N / float(sum(arg[terme] > 0 for arg in args)))
@@ -46,10 +50,16 @@ def calcul_TFIDF(tf, idf):
     return tfidf
 
 def calcul_correspondance(documents_vectors, query_vector):
-    quotiont = sum(documents_vectors[i]*query_vector[i] for i in range(len(documents_vectors)))
-    dom1 = sum(pow(documents_vectors[i], 2) for i in range(len(documents_vectors)))
-    dom2 = sum(pow(query_vector[i], 2) for i in range(len(query_vector)))
+    # Calculate dot product
+    quotient = sum(doc * query for doc, query in zip(documents_vectors, query_vector))
+
+    # Calculate magnitudes of vectors
+    dom1 = sum(pow(doc, 2) for doc in documents_vectors)
+    dom2 = sum(pow(query, 2) for query in query_vector)
+
+    # Check for division by zero
     if dom1 == 0 or dom2 == 0:
         return 0
-    result = quotiont/math.sqrt(dom1*dom2)
+    # Calculate cosine similarity
+    result = quotient / (math.sqrt(dom1) * math.sqrt(dom2))
     return result
