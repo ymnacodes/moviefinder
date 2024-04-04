@@ -16,6 +16,13 @@ class Trailer:
         except (KeyError, IndexError):
             return None
 
+    def getThumbnail(self):
+          try:
+                data = self.TrailerData["items"][0]["snippet"]["thumbnails"]["default"]["url"]
+                return str(data)
+          except (KeyError, IndexError):
+                return None
+
     def fetch(self, MovieName):
             url = f"https://www.googleapis.com/youtube/v3/search" + \
             f"?key={API_key}&q={MovieName} trailer&aqi=no"

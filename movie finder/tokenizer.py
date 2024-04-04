@@ -1,5 +1,7 @@
 import os
 from assistant import *
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 def load_data(directory):
@@ -12,14 +14,15 @@ def load_data(directory):
         filenames.append(filename)
     return data_list, filenames
 
-src = r'C:\Users\yomna\OneDrive\Desktop\uni\year 2\sem2\indexation\indexing proj\moviefinder\movie finder\MovieScriptsList'
+src = r'movie finder\MovieScriptsList'
 corpus, filenames = load_data(src)
 
 cleaned_corpus = [data_clean(doc) for doc in corpus]
 
-def querytomovies(query):
+def querytomovies(cleaned_corpus,query):
     # Cleaning query
     tokenized_query = data_clean(query)
+    query = ' '.join(tokenized_query)
 
     # Unify words in cleaned_corpus
     union_set = set()
@@ -51,26 +54,22 @@ def querytomovies(query):
         tfidf_list.append(calcul_TFIDF(tf_list[i], idf))
 
     # Represent query as vector
-    query_vector = []
-    for term in terms:
-        if term in query:
-            query_vector.append(1)
-        else:
-            query_vector.append(0)
+    cleaned_corpus = [' '.join(doc) for doc in cleaned_corpus]
+# Create a TfidfVectorizer object
+    vectorizer = TfidfVectorizer()
 
-    # Represent documents as vectors
-    documents_vectors = []
-    for i in range(len(cleaned_corpus)):
-        documents_vectors.append(list(tfidf_list[i].values()))
+# Fit the vectorizer to the cleaned_corpus and transform the cleaned_corpus into a TF-IDF matrix
+    tfidf_matrix = vectorizer.fit_transform(cleaned_corpus)
 
-    # Calculate correspondence between query and documents
-    correspondance = []
-    for i in range(len(cleaned_corpus)):
-        correspondance.append(calcul_correspondance(documents_vectors[i], query_vector))
-    results = sorted(range(len(correspondance)), key=lambda i: correspondance[i], reverse=True)[:10]
-    results = list(filter(lambda i: correspondance[i] != 0, results))
+# Transform the query into a TF-IDF vector
+    query_vector = vectorizer.transform([query])
 
-    print(correspondance)
+# Calculate the cosine similarity between the query vector and each document vector
+    correspondance = cosine_similarity(query_vector, tfidf_matrix)
+
+# Get the indices of the documents sorted by their similarity to the query
+    results = correspondance.argsort()[0][::-1][:10]
+    #print(results)
 
     # Store movie details in a list after filtering the name.
     movies = []
