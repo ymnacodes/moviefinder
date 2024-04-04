@@ -2,7 +2,6 @@ import requests
 #sends http requests in python
 
 API_key='AIzaSyDCyBRraltNgd93Ve22JYwGRG7wLlyD86A'
-url = "https://www.googleapis.com/youtube/v3/search?key={API_key}&q=barbie trailer&type=video&part=snippet&videoId=pBk4NYhWNMM"
 
 class Trailer:
     def __init__(self, MovieName: str = 'Barbie trailer'):
@@ -15,13 +14,6 @@ class Trailer:
                 return str(data)
         except (KeyError, IndexError):
             return None
-
-    def getThumbnail(self):
-          try:
-                data = self.TrailerData["items"][0]["snippet"]["thumbnails"]["default"]["url"]
-                return str(data)
-          except (KeyError, IndexError):
-                return None
 
     def fetch(self, MovieName):
             url = f"https://www.googleapis.com/youtube/v3/search" + \

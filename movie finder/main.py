@@ -24,10 +24,16 @@ def fetch_movies():
     top5.grid(row=0,column=2)
     # Display movie listings
     for i, movie_title in enumerate(best_matches[:5], start=1):
-        MovieTitle = tk.Label(listings_frame, text=f"{i}. {movie_title}",cursor="hand2",bg= "#D4C5C5",pady=20,font="Poppins")
+        MovieTitle = tk.Label(listings_frame, text=f"{i}. {movie_title}", cursor="hand2", bg="#D4C5C5", pady=20, font="Poppins")
         MovieTitle.grid(row=6 + i, column=2)
-        Trailer_Url= fetch_trailer(movie_title)
-        MovieTitle.bind("<Button-1>", lambda event, id="": open_Trailer(f"{Trailer_Url}"))
+        Trailer_Url = fetch_trailer(movie_title)
+        print(Trailer_Url)
+
+    # Using a helper function to capture the current value of Trailer_Url
+        def open_trailer_wrapper(url):
+            return lambda event: open_Trailer(url)
+
+        MovieTitle.bind("<Button-1>", open_trailer_wrapper(Trailer_Url))
 
     # Switch to listings frame when clicked
     switch_frame(search_frame, listings_frame)
@@ -48,6 +54,7 @@ def open_Trailer(video_url):
 # Main window
 root = tk.Tk()
 root.title("FilmHunt")
+root.iconbitmap(bitmap='movie finder\images\logo.ico')
 root.geometry("405x500")
 root.configure(bg="#D4C5C5")
 

@@ -34,13 +34,13 @@ def calcul_TF(terms, doc):
         tfDict[term] = count/float(docCount)
     return tfDict
 
-def calcul_IDF(*args):
+def calcul_IDF(*docs):
     idfDict = {}
-    N = len(args)
+    N = len(docs)
     #initializing idf dictionary
-    idfDict = dict.fromkeys(args[0].keys(), 0)
+    idfDict = dict.fromkeys(docs[0].keys(), 0)
     for terme in idfDict:
-        idfDict[terme] = math.log10(N / float(sum(arg[terme] > 0 for arg in args)))
+        idfDict[terme] = math.log10(N / float(sum(doc[terme] > 0 for doc in docs)))
     return idfDict
 
 def calcul_TFIDF(tf, idf):
@@ -48,18 +48,3 @@ def calcul_TFIDF(tf, idf):
     for terme, val in tf.items():
         tfidf[terme] = val*idf[terme]
     return tfidf
-
-def calcul_correspondance(documents_vectors, query_vector):
-    # Calculate dot product
-    quotient = sum(doc * query for doc, query in zip(documents_vectors, query_vector))
-
-    # Calculate magnitudes of vectors
-    dom1 = sum(pow(doc, 2) for doc in documents_vectors)
-    dom2 = sum(pow(query, 2) for query in query_vector)
-
-    # Check for division by zero
-    if dom1 == 0 or dom2 == 0:
-        return 0
-    # Calculate cosine similarity
-    result = quotient / (math.sqrt(dom1) * math.sqrt(dom2))
-    return result

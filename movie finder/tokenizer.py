@@ -55,19 +55,19 @@ def querytomovies(cleaned_corpus,query):
 
     # Represent query as vector
     cleaned_corpus = [' '.join(doc) for doc in cleaned_corpus]
-# Create a TfidfVectorizer object
+    # Create a TfidfVectorizer object
     vectorizer = TfidfVectorizer()
 
-# Fit the vectorizer to the cleaned_corpus and transform the cleaned_corpus into a TF-IDF matrix
+    # Fit the vectorizer to the cleaned_corpus and transform the cleaned_corpus into a TF-IDF matrix
     tfidf_matrix = vectorizer.fit_transform(cleaned_corpus)
 
-# Transform the query into a TF-IDF vector
+    # Transform the query into a TF-IDF vector
     query_vector = vectorizer.transform([query])
 
-# Calculate the cosine similarity between the query vector and each document vector
+    # Calculate the cosine similarity between the query vector and each document vector
     correspondance = cosine_similarity(query_vector, tfidf_matrix)
 
-# Get the indices of the documents sorted by their similarity to the query
+    # Get the indices of the documents sorted by their similarity to the query
     results = correspondance.argsort()[0][::-1][:10]
     #print(results)
 
